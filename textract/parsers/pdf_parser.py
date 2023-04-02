@@ -1,14 +1,15 @@
 import os
 import shutil
-import six
+from distutils.spawn import find_executable
 from tempfile import mkdtemp
 
-from ..exceptions import UnknownMethod, ShellError
+import six
 
+from ..exceptions import ShellError, UnknownMethod
+from .image import Parser as EasyOcrParser
+from .image import TesseractParser
 from .utils import ShellParser
-from .image import Parser as TesseractParser
 
-from distutils.spawn import find_executable
 
 class Parser(ShellParser):
     """Extract text from pdf files using either the ``pdftotext`` method
@@ -31,7 +32,9 @@ class Parser(ShellParser):
         elif method == 'pdfminer':
             return self.extract_pdfminer(filename, **kwargs)
         elif method == 'tesseract':
-            return self.extract_tesseract(filename, **kwargs)
+            return self.extract_ocr(filename, TesseractParser, **kwargs)
+        elif method == 'easyocr':
+            return self.extract_ocr(filename, EasyOcrParser, **kwargs)
         else:
             raise UnknownMethod(method)
 
@@ -59,7 +62,7 @@ class Parser(ShellParser):
                 stdout, _ = self.run(['python2',pdf2txt_path, filename])
         return stdout
 
-    def extract_tesseract(self, filename, **kwargs):
+    def extract_ocr(self, filename, ocr_cls, **kwargs):
         """Extract text from pdfs using tesseract (per-page OCR)."""
         temp_dir = mkdtemp()
         base = os.path.join(temp_dir, 'conv')
@@ -69,8 +72,12 @@ class Parser(ShellParser):
 
             for page in sorted(os.listdir(temp_dir)):
                 page_path = os.path.join(temp_dir, page)
-                page_content = TesseractParser().extract(page_path, **kwargs)
+                page_content = ocr_cls().extract(page_path, **kwargs)
                 contents.append(page_content)
-            return six.b('').join(contents)
+            if ocr_cls == TesseractParser:
+                return six.b('').join(contents)
+            elif ocr_cls == EasyOcrParser:
+                return ' '.join(contents)
+
         finally:
             shutil.rmtree(temp_dir)
