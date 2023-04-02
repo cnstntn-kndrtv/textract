@@ -77,7 +77,7 @@ class Parser(ShellParser):
             if ocr_cls == TesseractParser:
                 return six.b('').join(contents)
             elif ocr_cls == EasyOcrParser:
-                return ' '.join(contents)
+                return '\n'.join(contents)
 
         finally:
             shutil.rmtree(temp_dir)

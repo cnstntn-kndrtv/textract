@@ -29,7 +29,7 @@ class Parser(ShellParser):
 
     def extract(self, filename, **kwargs):
 
-        result = easyocr_reader.readtext(filename)
-        text = ' '.join([r[1] for r in result])
+        result = easyocr_reader.readtext(filename, paragraph=True, y_ths=-0.1)
+        text = '\n'.join([r[1] for r in result])
 
         return text
