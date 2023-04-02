@@ -6,8 +6,8 @@ beautifulsoup4~=4.8.0
 chardet==3.*
 docx2txt~=0.8
 #Last with python2 support
-extract-msg<=0.29.*
- #Last with python2 support
+extract-msg
+#Last with python2 support
 pdfminer.six==20191110
 python-pptx~=0.6.18
 six~=1.12.0
