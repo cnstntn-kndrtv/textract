@@ -7,7 +7,7 @@ import easyocr
 
 from .utils import ShellParser
 
-easyocr_reader = easyocr.Reader(['ru','en']) # this needs to run only once to load the model into memory
+easyocr_reader = easyocr.Reader(['ru','en'], gpu=False) # this needs to run only once to load the model into memory
 
 class TesseractParser(ShellParser):
     """Extract text from various image file formats using tesseract-ocr"""
