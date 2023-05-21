@@ -28,30 +28,23 @@ class Parser(ShellParser):
 
     def __init__(self,
                  use_gpu: bool = False,
-                 always_init_reader: bool = False
+                 delete_reader: bool = True,
                  ) -> None:
 
         self.use_gpu = use_gpu
-        self.always_init_reader = always_init_reader
-        if not always_init_reader:
-            self.reader = self._init_reader()
-
+        self.delete_reader = delete_reader
+        self.reader = self._init_reader()
         super().__init__()
 
     def _init_reader(self) -> easyocr.Reader:
-        easyocr.Reader(['ru','en'], gpu=self.use_gpu)
+        return easyocr.Reader(['ru','en'], gpu=self.use_gpu)
 
     def extract(self, filename, **kwargs):
 
-        if self.always_init_reader:
-            easyocr_reader = self._init_reader()
-        else:
-            easyocr_reader = self.reader
-
-        result = easyocr_reader.readtext(filename, paragraph=True, y_ths=-0.1)
+        result = self.reader.readtext(filename, paragraph=True, y_ths=-0.1)
         text = '\n'.join([r[1] for r in result])
 
-        if self.always_init_reader:
+        if self.delete_reader:
             del easyocr_reader
 
         return text
