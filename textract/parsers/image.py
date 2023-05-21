@@ -45,6 +45,6 @@ class Parser(ShellParser):
         text = '\n'.join([r[1] for r in result])
 
         if self.delete_reader:
-            del easyocr_reader
+            del self.reader
 
         return text
