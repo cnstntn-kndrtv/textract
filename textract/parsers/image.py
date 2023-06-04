@@ -43,7 +43,12 @@ class Parser(ShellParser):
 
     def extract(self, filename, **kwargs):
 
-        result = self.reader.readtext(filename, paragraph=True, y_ths=-0.1)
+        result = self.reader.readtext(
+            filename,
+            paragraph=True,
+            y_ths=-0.1,
+            x_ths=1.5,
+        )
         text = '\n'.join([r[1] for r in result])
 
         return text
